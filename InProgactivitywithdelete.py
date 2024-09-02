@@ -12,8 +12,9 @@ while True:
     print("2. Add a new name")
     print("3. Update an existing name")
     print("4. Display all names")
-    print("5. Exit")
-    choice = input("Enter your choice (1/2/3/4/5): ")
+    print("5. Delete a name")
+    print("6. Exit")
+    choice = input("Enter your choice (1/2/3/4/5/6): ")
 
     if choice == "1":
         z = input("Enter the Name to search: ")
@@ -50,8 +51,17 @@ while True:
                 print(f"{y + x}. {N[x]}")
 
     elif choice == "5":
+        delete_name = input("Enter the name you want to delete: ")
+        if delete_name in N:
+            index = N.index(delete_name)
+            N[index] = ""
+            print(f"{delete_name} has been deleted from the list.")
+        else:
+            print(f"{delete_name} is not found in the list.")
+
+    elif choice == "6":
         print("Exiting...")
         break
 
     else:
-        print("Invalid choice. Please enter '1', '2', '3', '4', or '5'.")
+        print("Invalid choice. Please enter '1', '2', '3', '4', '5', or '6'.")
