@@ -15,6 +15,7 @@ net_salaries = []
 taxes = []
 contributions_list = []
 loan_payments = []
+cs = []
 
 def get_tax_rate(civil_status, total_dependents):
     if civil_status == "M":
@@ -91,7 +92,14 @@ def add_record():
     print("-" * 76)
     name = input("Name: ").upper()
     address = input("Address: ").upper()
-    civil_status = input("Civil Status [M]-Married / [S]-Single: ").upper()
+
+    while True:
+        civil_status=input("Civil Status [M]-Married / [S]-Single: ").upper()
+        if civil_status.upper() in ("M","S"):
+            cs.append(civil_status)
+            break
+        else:
+            print("Invalid input! Please enter a valid letters.")
 
     if civil_status == 'M':
         while True:
@@ -234,7 +242,13 @@ def handle_payroll():
     emp_num = int(input("Enter Employee Number for payroll: "))
     for emp in employees:
         if emp[0] == emp_num:
-            rate_per_hour = float(input("Rate per Hour: "))
+            while True:
+                try:
+                    rate_per_hour = float(input("Rate per Hour: "))
+                    break
+                except ValueError:
+                    print("Invalid input! Please enter a valid number for Rate per hour")  
+
             loan = input("Loan? [Y]-Yes / [N]-No: ").upper() == "Y"
             loan_type, loan_amount = "", 0
 
