@@ -66,16 +66,31 @@ def display_month_summary(month, gross_salary, hours_worked, rate, deductions, t
     print("-" * 76)
     print(f"Net Monthly Salary                     : PhP {net_salary:,.2f}")
 
-def display_year_summary():
-    print("Year-End Summary".center(75, "-"))
-    print(f"Total Gross Salary for the Year       : PhP {sum(gross_salaries):,.2f}")
-    print(f"Total Net Salary for the Year         : PhP {sum(net_salaries):,.2f}")
-    print(f"Total Tax Paid for the Year           : PhP {sum(taxes):,.2f}")
-    print(f"Total Contributions for the Year      : PhP {sum(contributions_list):,.2f}")
-    print(f"        Total PhilHealth Paid         : PhP {len(gross_salaries) * PHILHEALTH:,.2f}")
-    print(f"        Total SSS Paid                : PhP {len(gross_salaries) * SSS:,.2f}")
-    print(f"        Total Pag-ibig Paid           : PhP {len(gross_salaries) * PAGIBIG:,.2f}")
-    print(f"Total Loan Payment for the Year       : PhP {sum(loan_payments):,.2f}")
+def display_year_summary(emp_num):
+    if emp_num < 1 or emp_num > len(employees):
+        print(f"Employee Number {emp_num} not found.")
+        return
+
+    employee = employees[emp_num - 1]
+    emp_gross_salary = 0
+    emp_net_salary = 0
+    emp_tax = 0
+    emp_contributions = 0
+    emp_loan_payments = 0
+
+    for month in range(len(gross_salaries)):
+        emp_gross_salary += gross_salaries[month] if emp_num == month + 1 else 0
+        emp_net_salary += net_salaries[month] if emp_num == month + 1 else 0
+        emp_tax += taxes[month] if emp_num == month + 1 else 0
+        emp_contributions += contributions_list[month] if emp_num == month + 1 else 0
+        emp_loan_payments += loan_payments[month] if emp_num == month + 1 else 0
+
+    print("Year-End Summary for Employee Number {}".format(emp_num).center(75, "-"))
+    print(f"Total Gross Salary for the Year       : PhP {emp_gross_salary:,.2f}")
+    print(f"Total Net Salary for the Year         : PhP {emp_net_salary:,.2f}")
+    print(f"Total Tax Paid for the Year           : PhP {emp_tax:,.2f}")
+    print(f"Total Contributions for the Year      : PhP {emp_contributions:,.2f}")
+    print(f"Total Loan Payment for the Year       : PhP {emp_loan_payments:,.2f}")
 
 def update_civil_status(employee):
     civil_status = input("New Civil Status [M]-Married / [S]-Single: ").upper()
@@ -378,11 +393,16 @@ def menu():
         elif option == '6':
             handle_payroll()
         elif option == '7':
-            display_year_summary()
+            while True:
+                try:
+                    emp_num = int(input("Enter Employee Number for Year-End Summary: "))
+                    display_year_summary(emp_num)
+                    break
+                except ValueError:
+                    print("Invalid input! Please enter a valid employee number.")
         elif option == '8':
             print("Exiting the program.")
             break
         else:
             print("Invalid option. Please try again.")
-
 menu()
