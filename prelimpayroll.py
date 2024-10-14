@@ -23,6 +23,8 @@ def get_tax_rate(civil_status, total_dependents):
             return 0.08
         elif 2 <= total_dependents <= 3:
             return 0.05
+        elif total_dependents == 0:
+            return 0.08
         else:
             return 0.03
     return 0.10
@@ -94,12 +96,12 @@ def add_record():
     address = input("Address: ").upper()
 
     while True:
-        civil_status=input("Civil Status [M]-Married / [S]-Single: ").upper()
-        if civil_status.upper() in ("M","S"):
+        civil_status = input("Civil Status [M]-Married / [S]-Single: ").upper()
+        if civil_status.upper() in ("M", "S"):
             cs.append(civil_status)
             break
         else:
-            print("Invalid input! Please enter a valid letters.")
+            print("Invalid input! Please enter valid letters.")
 
     if civil_status == 'M':
         while True:
@@ -113,7 +115,7 @@ def add_record():
                 print("Invalid input. Please enter a valid number for dependents.")
     else:
         num_dependents = 0
-    
+
     tax_rate = get_tax_rate(civil_status, num_dependents)
 
     employee_number = len(employees) + 1
@@ -132,7 +134,7 @@ def display_record():
     if not employees:
         print("No records to display.")
         return
-    
+
     print("-" * 76)
     print(f"Display Records".center(75))
     print("-" * 76)
@@ -150,51 +152,79 @@ def edit_record():
     if not employees:
         print("No records to edit.")
         return
-    
+
     print("-" * 76)
     print(f"Update Record".center(75))
     print("-" * 76)
-    emp_num = int(input("Enter Employee Number to edit: "))
-    for emp in employees:
+    while True:
+        try:
+            emp_num = int(input("Enter Employee Number to edit: "))
+            break
+        except ValueError:
+            print("Invalid input! Please input the number of the employee")
+
+    for i, emp in enumerate(employees):
         if emp[0] == emp_num:
             print(f"Editing record for Employee Number: {emp_num}")
-            emp[1] = input("Enter new name: ").upper() or emp[1]
-            emp[2] = input("Enter new address: ").upper() or emp[2]
-            civil_status = input("Civil Status [M]-Married / [S]-Single: ").upper() or emp[3][0]
-            emp[3] = "MARRIED" if civil_status == 'M' else "SINGLE"
-            
+            name = input("Enter new name: ").upper() or emp[1]
+            address = input("Enter new address: ").upper() or emp[2]
+
+            while True:
+                civil_status = input("Civil Status [M]-Married / [S]-Single: ").upper()
+                if civil_status.upper() in ("M", "S"):
+                    cs.append(civil_status)
+                    break
+                else:
+                    print("Invalid input! Please enter valid letters.")
+
             if civil_status == 'M':
-                emp[4] = int(input("Number of Dependents: "))
+                while True:
+                    try:
+                        num_dependents = int(input("Number of Dependents: "))
+                        if num_dependents < 0:
+                            print("Number of dependents cannot be negative. Please enter again.")
+                        else:
+                            break
+                    except ValueError:
+                        print("Invalid input. Please enter a valid number for dependents.")
             else:
-                emp[4] = 0
-            
-            emp[5] = get_tax_rate(civil_status, emp[4])
-            print(f"\nRecord updated successfully! New tax rate is {emp[5]:.2f}\n")
+                num_dependents = 0
+
+            tax_rate = get_tax_rate(civil_status, num_dependents)
+
+            employees[i] = (emp_num, name, address, "MARRIED" if civil_status == 'M' else "SINGLE", num_dependents, tax_rate)
+
+            print(f"\nRecord updated successfully!")
+            print(f"New Name: {name}")
+            print(f"New Address: {address}")
+            print(f"New Civil Status: {'MARRIED' if civil_status == 'M' else 'SINGLE'}")
+            print(f"Number of Dependents: {num_dependents}")
+            print(f"New Tax Rate: {tax_rate:.2f}\n")
             return
-        
+
     print(f"Employee Number {emp_num} not found.")
 
 def remove_record():
     if not employees:
         print("No records to remove.")
         return
-    
+
     print("-" * 76)
     print(f"Delete Records".center(75))
     print("-" * 76)
     emp_num = int(input("Enter Employee Number to remove: "))
-    
+
     for i, emp in enumerate(employees):
         if emp[0] == emp_num:
             del employees[i]
             print(f"Employee {emp_num} removed successfully!")
-            
+
             for index, employee in enumerate(employees):
                 employee[0] = index + 1
-            
+
             print("Employee numbers have been updated.")
             return
-    
+
     print(f"Employee Number {emp_num} not found.")
 
 def search_record():
@@ -215,7 +245,7 @@ def search_record():
             print(f"Tax Rate: {emp[5]:.2f}")
             print("-" * 30)
             return
-    
+
     print(f"No employee found with the name {search_name}.")
 
 def calculate_loan_payment(loan, loan_type, loan_amount, gross_salary):
@@ -238,8 +268,14 @@ def handle_payroll():
     print("-" * 76)
     print(f"Process Payroll".center(75))
     print("-" * 76)
+
+    while True:
+        try:
+            emp_num = int(input("Enter Employee Number for Payroll: "))
+            break
+        except ValueError:
+            print("Invalid input! Please input the number of the employee")
     
-    emp_num = int(input("Enter Employee Number for payroll: "))
     for emp in employees:
         if emp[0] == emp_num:
             while True:
@@ -247,18 +283,46 @@ def handle_payroll():
                     rate_per_hour = float(input("Rate per Hour: "))
                     break
                 except ValueError:
-                    print("Invalid input! Please enter a valid number for Rate per hour")  
+                    print("Invalid input! Please enter a valid number for Rate per hour")
 
-            loan = input("Loan? [Y]-Yes / [N]-No: ").upper() == "Y"
+            loan = False
+            while True:
+                loan_input = input("Loan? [Y]-Yes / [N]-No: ").upper()
+                if loan_input in ['Y', 'N']:
+                    loan = loan_input == 'Y'
+                    break
+                else:
+                    print("Invalid input! Please enter 'Y' for Yes or 'N' for No.")
+
             loan_type, loan_amount = "", 0
 
             if loan:
-                loan_type = input("[1] SSS / [2] Pag-ibig / [3] SSS and Pag-ibig: ")
-                loan_amount = float(input("Loan Amount: "))
+                while True:
+                    loan_type = input("[1] SSS / [2] Pag-ibig / [3] SSS and Pag-ibig: ")
+                    if loan_type in ["1", "2", "3"]:
+                        break
+                    else:
+                        print("Invalid input! Please select a valid loan type (1, 2, or 3).")
+                
+                while True:
+                    try:
+                        loan_amount = float(input("Loan Amount: "))
+                        if loan_amount < 0:
+                            print("Loan amount cannot be negative. Please enter a valid amount.")
+                        else:
+                            break
+                    except ValueError:
+                        print("Invalid input! Please enter a valid number for loan amount.")
 
             month, ans = 0, "Y"
             while ans.upper() == "Y":
-                total_hours_worked = float(input(f"Total Hours Worked ({month_names[month % 12]}): "))
+                while True:
+                    try:
+                        total_hours_worked = float(input(f"Total Hours Worked ({month_names[month % 12]}): "))
+                        break
+                    except ValueError:
+                        print("Invalid input! Please enter a valid number for Total Hours Worked.")
+                
                 gross_monthly_salary = rate_per_hour * total_hours_worked
 
                 loan_payment, loan_amount = calculate_loan_payment(loan, loan_type, loan_amount, gross_monthly_salary)
@@ -276,10 +340,15 @@ def handle_payroll():
                 print(f"Remaining loan amount after {month_names[month % 12]}: PhP {loan_amount:,.2f}")
 
                 month += 1
-                ans = input("Do you want to continue for another month? [Y]-Yes / [N]-No: ")
-
+                while True:
+                    ans = input("Do you want to continue for another month? [Y]-Yes / [N]-No: ")
+                    if ans.upper() in ['Y', 'N']:
+                        break
+                    else:
+                        print("Invalid input! Please enter 'Y' for Yes or 'N' for No.")
+            
             return
-    
+
     print(f"Employee Number {emp_num} not found.")
 
 def menu():
@@ -293,9 +362,9 @@ def menu():
         print("6. Payroll (Process payroll for an employee)")
         print("7. Year-End Summary")
         print("8. Exit (Terminate program)")
-        
+
         option = input("Select Option (1-8): ").strip()
-        
+
         if option == '1':
             add_record()
         elif option == '2':
