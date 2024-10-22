@@ -20,9 +20,21 @@ def edit(employees):
             mname = input("Name: ") or emp[1]
             maddress = input("Address: ") or emp[2]
             mcs = errCS("Civil Status [M]-Married / [S]-Single: ") or emp[3]
-            employees[i] = (emp[0], mname.upper(), maddress.upper(), mcs.upper(), emp[4], dependents(mcs), emp[6])
-            ans = input("Save changes? (Y/N) ")
-            print("Changes are saved!" if ans.upper() == "Y" else "Changes are not saved!"); break
+            num_dependents = 0
+        if civil_status == 'M':
+            while True:
+                try:
+                    num_dependents = int(input("Number of Dependents: "))
+                    if num_dependents >= 0: break
+                    print("Cannot be negative.")
+                except ValueError:
+                    print("Enter a valid number.")
+        tax_rate = (0.08 if civil_status == 'M' and num_dependents <= 1 else
+                    0.05 if civil_status == 'M' and num_dependents <= 3 else
+                    0.03 if civil_status == 'M' else 0.10)
+        employees[i] = (emp[0], mname.upper(), maddress.upper(), mcs.upper(), emp[4], dependents(mcs), tax_rate, emp[6])
+        ans = input("Save changes? (Y/N) ")
+        print("Changes are saved!" if ans.upper() == "Y" else "Changes are not saved!"); break
     else:
         print(f"{x} is not found!")
 print(f"GNCI Payroll System".center(75, "-"))
