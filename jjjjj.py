@@ -22,8 +22,7 @@ def edit(employees):
             mcs = errCS("Civil Status [M]-Married / [S]-Single: ") or emp[3]
             employees[i] = (emp[0], mname.upper(), maddress.upper(), mcs.upper(), emp[4], dependents(mcs), emp[6])
             ans = input("Save changes? (Y/N) ")
-            print("Changes are saved!" if ans.upper() == "Y" else "Changes are not saved!")
-            break
+            print("Changes are saved!" if ans.upper() == "Y" else "Changes are not saved!"); break
     else:
         print(f"{x} is not found!")
 print(f"GNCI Payroll System".center(75, "-"))
@@ -54,8 +53,7 @@ while True:
                     0.03 if civil_status == 'M' else 0.10)
         while True:
             try:
-                rph = float(input("Rate per Hour: "))
-                break
+                rph = float(input("Rate per Hour: ")); break
             except ValueError:
                 print("Enter a valid number.")
         employees.append((len(employees) + 1, name, address, 
@@ -78,7 +76,6 @@ while True:
                       f"Dependents: {emp[4]}\nTax Rate: {emp[5]:.2f}\n"
                       f"Rate per Hour: PhP{emp[6]:.2f}\n")
     elif option == '4':
-        print("Exiting the program.")
-        break
+        print("Exiting the program."); break
     else:
         print("Invalid option.")
